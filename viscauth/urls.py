@@ -15,7 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf.urls import url
+from django.conf.urls import include
+from authenticator import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('VISCAuth/', include('authenticator.urls')),
+    url(r'^logout/$', views.logoutAuth, name="logout"),
+    url(r'^login_check/$', views.logincheck, name="login_check"),
+    url(r'^$',views.indexRedirect,name="index"),
+    url(r'^projects/', views.serverRoot,name="projects"),
 ]

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <style>
+        html,body {
+            height: 100%
+        }
+
+        body {
+            margin: 0;
+            background-color: #eeeeee;
+        }
+        footer{
+            position: fixed;
+            bottom: 0px;
+            width: 100%;
+            color: white;
+            background: #2a3c4c;
+            padding: 2% 11%;
+            padding-bottom: 0px;
+        }
+        footer p{
+            margin: 2% 0 1% 0;
+        }
+
+    </style>
+    <title>DevAuth - Add User</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}" >
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"> <!-- Bootstrap 4 CDN Files -->
+</head>
+<body>
+    <form class="form"  method="POST" style="position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);border: none; width: 55%">
+      <div class="imgcontainer">
+        <h1> {{server_name}} Dev Console
+            <span style="position: absolute;left: 56%;font-size: 40%;top: 70px;">Protected by <b>DevAuth</b></span>
+        </h1>
+
+          <img src="{% static 'images/beast.jpg' %}" width="250px" alt="Beast DP"/>
+      </div>
+      <div>
+          {{Form.as_p}}
+          {% csrf_token %}
+        <button type="submit" >Create Auth</button>
+      </div>
+    </form>
+    <!-- Bootstrap 4 CDN Files -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <!------------------>
+    <footer align="center">
+        <h2 style="margin-bottom: 15px;">Dev Console
+            <sub style="position: absolute;left: 52%;font-size: 32%;top: 56%;"> Protected by DevAuth</sub>
+        </h2>
+        <p>&#169;2020 - <b>VIVINMETH</b> - All Rights Reserved</p>
+    </footer>
+</body>
+</html>
