@@ -79,8 +79,12 @@ WSGI_APPLICATION = 'viscauth.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'VISCauth',
+        'USER': 'postgres',
+        'PASSWORD': 'postgresroot',
+        'HOST': 'vmspgdb.czhyoftt3s8w.ap-south-1.rds.amazonaws.com',
+        'PORT': '7650',
     }
 }
 
@@ -137,3 +141,4 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 LOGIN_URL = '/VISCAuth/login/'
 
 AUTH_USER_MODEL = 'authenticator.Users'
+

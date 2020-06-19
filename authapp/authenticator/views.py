@@ -1,15 +1,38 @@
+from datetime import datetime
+
+from . import forms
+
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from authenticator.models import FrontAuth, AuthLogs
-from authenticator.forms import AuthenticatorForm, AddUserForm
-from . import forms
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
-from datetime import datetime
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import viewsets
+from rest_framework import generics, authentication, permissions
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.settings import api_settings
+
+from authenticator import serializers
+from authenticator import models
+from authenticator.models import FrontAuth, AuthLogs
+from authenticator.forms import AuthenticatorForm, AddUserForm
+
+
+class ForceCRSFAPIView(ObtainAuthToken):
+    @classmethod
+    def as_view(cls, **initkwargs):
+        # Force enables CSRF protection.  This is needed for unauthenticated API endpoints
+        # because DjangoRestFramework relies on SessionAuthentication for CSRF validation
+        view = super().as_view(**initkwargs)
+        view.csrf_exempt = False
+        return view
+
+
+
 
 @login_required
 def indexRedirect(request):
@@ -91,3 +114,31 @@ def serverRoot(request):
     response= HttpResponse()
     response['X-Accel-Redirect'] ='/beast'+request.path
     return response
+
+class UsersViewSet(viewsets.ModelViewSet):
+    """Handles creating and updating users"""
+    serializer_class = serializers.UserSerializer
+    queryset = models.Users.objects.all()
+
+class CreateUserView(generics.CreateAPIView):
+    """ Create New User API"""
+    serializer_class = serializers.UserSerializer
+
+
+
+class CreateTokenView(ForceCRSFAPIView):
+    """ Create Auth Token"""
+    serializer_class = serializers.AuthTokenSerializer
+    renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
+
+class ManageUsersView(generics.RetrieveUpdateAPIView):
+    """ Manage user API"""
+    serializer_class = serializers.ManageUserSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_object(self):
+        """Retrive and return authd User"""
+        return self.request.user
+
+

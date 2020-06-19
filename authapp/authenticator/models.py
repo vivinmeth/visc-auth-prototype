@@ -9,13 +9,13 @@ from django.contrib.auth.models import BaseUserManager
 class UsersManager(BaseUserManager):
     """Users Manager for Django CLI"""
 
-    def create_user(self, uname, email, name, password=None):
+    def create_user(self, uname, password=None, **extra_fields):
         """ New User """
-        if not uname or not email:
-            raise ValueError("Users must enter Username and Email")
+        if not uname:
+            raise ValueError("Users must enter Username")
 
-        email= self.normalize_email(email)
-        user = self.model(uname=uname, email=email, name=name)
+        #email= self.normalize_email(email)
+        user = self.model(uname=uname)
         user.is_superuser = False
         user.is_omega = False
         user.set_password(password)
@@ -23,19 +23,19 @@ class UsersManager(BaseUserManager):
 
         return user
 
-    def create_omegauser(self, uname, email, name, password):
+    def create_omegauser(self, uname, password):
         """ New Omega User """
-        user = self.create_user(uname, email, name, password)
-
+        user = self.create_user(uname)
+        user.set_password(password)
         user.is_superuser = False
         user.is_omega = True
         user.save(using=self._db)
 
         return user
 
-    def create_superuser(self, uname, email, name, password):
-        user = self.create_user(uname, email, name, password)
-
+    def create_superuser(self, uname, password):
+        user = self.create_user(uname)
+        user.set_password(password)
         user.is_superuser = True
         user.is_omega = True
         user.save(using=self._db)
