@@ -16,5 +16,6 @@ urlpatterns = [
     path('CreateUser/', views.CreateUserView.as_view(), name="create_user"),
     path('authUser/', views.CreateTokenView.as_view(), name="create_token"),
     path('manageUser/', views.ManageUsersView.as_view(), name="manage_user"),
+    path('get_login_token/', views.CSRFToken.as_view(), name="csrf_middleware"),
     path('', include(router.urls)),
 ]

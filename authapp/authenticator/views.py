@@ -1,14 +1,19 @@
 from datetime import datetime
 
+from django.utils.decorators import method_decorator
+
 from . import forms
 
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import requires_csrf_token, ensure_csrf_cookie
+from django.template.context_processors import csrf
 
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import viewsets
@@ -22,7 +27,7 @@ from authenticator.models import FrontAuth, AuthLogs
 from authenticator.forms import AuthenticatorForm, AddUserForm
 
 
-class ForceCRSFAPIView(ObtainAuthToken):
+class CRSFObtainAuthToken(ObtainAuthToken):
     @classmethod
     def as_view(cls, **initkwargs):
         # Force enables CSRF protection.  This is needed for unauthenticated API endpoints
@@ -115,6 +120,16 @@ def serverRoot(request):
     response['X-Accel-Redirect'] ='/beast'+request.path
     return response
 
+class CSRFToken(APIView):
+
+    @method_decorator(ensure_csrf_cookie)
+    def get(self, request, format=None):
+        """Sends a CSRF Token to use for Initial API call"""
+        cont = {'Login': 'Your Login Token is Generated, Please use Wisely!'}
+        print (cont)
+        return JsonResponse(cont)
+
+
 class UsersViewSet(viewsets.ModelViewSet):
     """Handles creating and updating users"""
     serializer_class = serializers.UserSerializer
@@ -126,7 +141,7 @@ class CreateUserView(generics.CreateAPIView):
 
 
 
-class CreateTokenView(ForceCRSFAPIView):
+class CreateTokenView(CRSFObtainAuthToken):
     """ Create Auth Token"""
     serializer_class = serializers.AuthTokenSerializer
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
