@@ -10,7 +10,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import requires_csrf_token, ensure_csrf_cookie
+from django.views.decorators.csrf import requires_csrf_token, ensure_csrf_cookie, csrf_protect
 from django.template.context_processors import csrf
 
 from rest_framework import status
@@ -28,6 +28,15 @@ from authenticator.forms import AuthenticatorForm, AddUserForm
 
 
 class CRSFObtainAuthToken(ObtainAuthToken):
+    @classmethod
+    def as_view(cls, **initkwargs):
+        # Force enables CSRF protection.  This is needed for unauthenticated API endpoints
+        # because DjangoRestFramework relies on SessionAuthentication for CSRF validation
+        view = super().as_view(**initkwargs)
+        view.csrf_exempt = False
+        return view
+
+class CRSFAPIView(APIView):
     @classmethod
     def as_view(cls, **initkwargs):
         # Force enables CSRF protection.  This is needed for unauthenticated API endpoints
@@ -157,3 +166,10 @@ class ManageUsersView(generics.RetrieveUpdateAPIView):
         return self.request.user
 
 
+class CheckTokenView(APIView):
+    """ Check if the Auth Token is valid and returns boolean"""
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self,request, format=None):
+        return JsonResponse({'TokenValid': True})
